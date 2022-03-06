@@ -10,7 +10,7 @@ PRIME  = 39041
 
 #import the neccessary libraries
 import sys
-import numpy 
+import numpy as np
 
 ''' function f(x,g,p) = g^x mod p where x is source , g is the generator of the Multiplicative group Zp and p is some large prime such that p-1 is not a product of small primes '''
 ''' It is computationally hard to invert.The problem of inverting this function is popularly called Discrete Log '''
@@ -32,7 +32,7 @@ def H(x,g,p):
     return res + hardcore_bit
 
 ''' given a nbit seed, it generates a l bit random generator using the above define H function '''
-def G(x,g,p,L):
+def Pseudo_Random_Generator(x,L,g = GENERATOR,p = PRIME):
     start = x
     prn = ""
     for i in range(L):
@@ -77,7 +77,8 @@ if len(seed) != seed_size:
     print("The size of the seed not the same as declared\n")
     sys.exit(1)
 
-prn = G(seed,GENERATOR,PRIME,output_size)
+prn = Pseudo_Random_Generator(seed,output_size,GENERATOR,PRIME)
+print(Pseudo_Random_Generator(seed,output_size))
 print("The generated pseudo random number is {0} (in Binary) and {1} (in Decimal) and the size in bits is {2} from seed {3} (in decimal) and {4} (in binary)".format(prn,int(prn,2),len(prn),seed,int(seed,2)))
 
 
