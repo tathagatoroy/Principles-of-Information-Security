@@ -16,7 +16,7 @@ import numpy as np
 ''' It is computationally hard to invert.The problem of inverting this function is popularly called Discrete Log '''
 def modular_exponentiation(x,g,p):
     #apparently python natively supports fast modular exponentiation through passing an optional parameter p to pow()
-    return pow(x,g,p)
+    return pow(g,x,p)
 
 
 ''' this function uses to the above defined function to generate the random bits '''
@@ -26,7 +26,7 @@ def modular_exponentiation(x,g,p):
 ''' return f(x,g,p) = g^x mod p | msb(x) '''
 def H(x,g,p):
     int_x = int(x,2)
-    res = bin(pow(int_x,g,p)).replace('0b','')
+    res = bin(pow(g,int_x,p)).replace('0b','')
     hardcore_bit = res[0]
     res = res.zfill(len(x)) # ensure res is same size as SEED SIZE by padding zeros
     return res + hardcore_bit
@@ -37,7 +37,7 @@ def Pseudo_Random_Generator(x,L,g = GENERATOR,p = PRIME):
     prn = ""
     for i in range(L):
         res = H(start,g,p)
-        prn = prn + start[-1]
+        prn = prn + res[-1]
         start = res[:len(x)]
     return prn 
 
