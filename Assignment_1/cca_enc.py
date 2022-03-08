@@ -1,4 +1,4 @@
-''' code to create MAC using pseudo random generator and pseudo random function '''
+''' code to create CCA secure system  using CPA secure system and MAC '''
 ''' author : Tathagato Roy '''
 
 
