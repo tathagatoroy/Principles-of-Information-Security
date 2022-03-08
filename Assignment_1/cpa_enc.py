@@ -90,7 +90,7 @@ class Cpa_Encryption:
     def encryption(self,k,x):
        
         seed = generate_seed(min(self.n - 1,16))
-        key = Pseudo_Random_Generator(seed,self.n)
+        r = Pseudo_Random_Generator(seed,self.n)
         res = Pseudo_Random_Function(k,r)
         s = ""
         for i in range(len(res)):

@@ -141,50 +141,107 @@ class MAC:
         else:
             return 0
 
+
+
+''' class which is a construction of a secure encryption  which is secure against cpa attacks '''
+class Cpa_Encryption:
+
+    
+    ''' n is the security parameter '''
+    def __init__(self,n):
+        self.n = n
+
+
+    ''' returns a n bit string randomly from an uniform distribution '''
+    def generation(self):
+        seed = generate_seed(min(self.n - 1,16))
+        key = Pseudo_Random_Generator(seed,self.n)
+
+        return key
+    
+    ''' returns a (r,s) cipher text given an input x and key k where r is an randomly generated string and s = (F_k(r) xor x) where F is a pseudo random function '''
+    def encryption(self,k,x):
+       
+        seed = generate_seed(min(self.n - 1,16))
+        r = Pseudo_Random_Generator(seed,self.n)
+        res = Pseudo_Random_Function(k,r)
+        s = ""
+        for i in range(len(res)):
+            if res[i] == x[i]:
+                s = s + '0'
+            else:
+                s = s + '1'
+        return (r,s)
+    
+
+    ''' upon given a ciphertext (r,s) and key k , returns the decrypted value of the ciphertext'''
+    def decryption(self,k,r,s):
+        res = Pseudo_Random_Function(k,r)
+        m = ""
+        for i in range(len(res)):
+            if res[i] == s[i]:
+                m = m + '0'
+            else:
+                m = m + '1'
+        return m
+class CCA_Encryption:
+    
+    ''' n is the security parameter and initialise cpa and mac systems'''
+    def __init__(self,n):
+        self.n = n
+        self.mac = MAC(self.n)
+        self.cpa = Cpa_Encryption(self.n)
+    
+    ''' generate k1,k2 '''
+    def generation(self):
+        k1 = self.cpa.generation()
+        k2 = self.mac.generation()
+        return k1,k2
+
+    ''' encryption '''
+    def encryption(self,k1,k2,x):
+        r1,s = self.cpa.encryption(k1,x)
+        r2,tag = self.mac.mac(k2,r1 + s)
+        return r1,s,r2,tag
+    
+
+    ''' decryption '''
+    def decryption(self,k1,k2,r1,s,r2,tag):
+        if self.mac.verify(k2,r2,tag,r1 + s) == 1:
+            dec = self.cpa.decryption(k1,r1,s)
+            return dec
+        else : return '-1' 
+    
+
+
+    
+
    
 n = int(input("Enter the security parameter of the Encryption system (Ideally more than 16) :     " ))
 if n <= 16:
     print("n should be atleast 16")
     sys.exit(1)
-mac = MAC(n)
+cca = CCA_Encryption(n)
 while(1):
     ans = input("if you want to try out a query press y else n : "  )
     if ans == 'n':
         print("Exiting ....")
         sys.exit(0)
     elif ans == 'y':
-        x = input("Enter the variable length message : ")
+        x = input("Enter the message of length {0} : ".format(n))
         #check if the size of the message is at max 2^(n/4 -1) 
-        if float(len(x)) > pow(2,(n/4)) - 1:
-            print("Size of message is too long,exiting")
-            sys.exit(1)
-        #generate key
-        k = mac.generation()
-        print("The generated Key is : {0}".format(k))
+        if len(x) != n:
+            print("The message is not of the right size ,exiting ...")
+        k1,k2 = cca.generation()
+        print("the two keys generated are : {0} , {1}".format(k1,k2))
+        r1,s,r2,tag = cca.encryption(k1,k2,x)
+        print("The ciphertext c is given by : {0} and the tag t is given by : {1} ".format(r1 + s,r2 + tag))
+        dec = cca.decryption(k1,k2,r1,s,r2,tag)
+        if dec == '-1' :
+            print("decryption is not possible")
+        else:
+            print("The decrypted message is {0} ".format(dec))
 
-        #MAC generation
-        r,tag = mac.mac(k,x)
-        print("The mac tag is given by ({0},{1})".format(r,tag))
-
-        #verification 
-        print("Verfiying the generated MAC")
-        if mac.verify(k,r,tag,x) == 1:
-            print("Succesfully Verified")
-        else:
-            print("Corruption happened")
-        print("Changing the first bit of the message and seeing if the verifier can detect that.")
-        x_new = list(x) #convert to list
-        #modify the fist bit
-        if x_new[0] == '0':
-            x_new[0] = '1'
-        else:
-            x_new[0] = x_new[0] + '0'
-        x_new = "".join(x_new) # reconvert to string
-        print("The modified messages is " + x_new)
-        if mac.verify(k,r,tag,x_new) == 1:
-            print("The new message is succesfully verified,This is wrong,our system is not secure")
-        else:
-            print("The message has been tampered with,as expected")
     
 
     else:
