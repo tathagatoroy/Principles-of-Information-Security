@@ -37,12 +37,12 @@ def modular_exponentiation(x,g,p):
 ''' this function uses to the above defined function to generate the random bits '''
 ''' the hardcore bit is the msb(x) of g^x mod p '''
 ''' x is in string format '''
-''' given a n bit source it generates random n + 1 bits ''' 
+''' given a n bit sorce it generates random n + 1 bits ''' 
 ''' return f(x,g,p) = g^x mod p | msb(x) '''
 def H(x,g,p):
     int_x = int(x,2)
     res = bin(pow(g,int_x,p)).replace('0b','')
-    hardcore_bit = res[0]
+    hardcore_bit = x[0]
     res = res.zfill(len(x)) # ensure res is same size as SEED SIZE by padding zeros
     return res + hardcore_bit
 

@@ -38,7 +38,7 @@ def modular_exponentiation(x,g,p):
 def H(x,g,p):
     int_x = int(x,2)
     res = bin(pow(g,int_x,p)).replace('0b','')
-    hardcore_bit = res[0]
+    hardcore_bit = x[0]
     res = res.zfill(len(x)) # ensure res is same size as SEED SIZE by padding zeros
     return res + hardcore_bit
 
