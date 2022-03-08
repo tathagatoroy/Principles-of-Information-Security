@@ -84,7 +84,7 @@ class MAC:
     def mac(self,k,x):
         # first padding for it to be multiple of n/4
         # padding the last part with 10*
-        q = n // 4 + 1
+        q = math.ceil(n / 4)
         if len(x) % q != 0:
             x = x + '1'
         while(len(x) % q != 0):
@@ -116,7 +116,7 @@ class MAC:
         ''' rerun the mac '''
         # first padding for it to be multiple of n/4
         # padding the last part with 10*
-        q = n // 4 + 1
+        q = math.ceil(n / 4) 
         if len(x) % q != 0:
             x = x + '1'
         while(len(x) % q != 0):
@@ -155,7 +155,7 @@ while(1):
     elif ans == 'y':
         x = input("Enter the variable length message : ")
         #check if the size of the message is at max 2^(n/4 -1) 
-        if float(len(x)) > pow(2,(n/4)) - 1:
+        if float(len(x)) > pow(2,(n/4) - 1):
             print("Size of message is too long,exiting")
             sys.exit(1)
         #generate key

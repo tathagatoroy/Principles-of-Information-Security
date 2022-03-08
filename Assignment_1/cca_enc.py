@@ -83,7 +83,7 @@ class MAC:
     def mac(self,k,x):
         # first padding for it to be multiple of n/4
         # padding the last part with 10*
-        q = n // 4 + 1
+        q = math.ceil(n / 4)
         if len(x) % q != 0:
             x = x + '1'
         while(len(x) % q != 0):
@@ -115,7 +115,7 @@ class MAC:
         ''' rerun the mac '''
         # first padding for it to be multiple of n/4
         # padding the last part with 10*
-        q = n // 4 + 1
+        q = math.ceil(n / 4) 
         if len(x) % q != 0:
             x = x + '1'
         while(len(x) % q != 0):

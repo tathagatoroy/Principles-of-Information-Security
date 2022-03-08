@@ -1,6 +1,5 @@
-''' code to create generate a fixed length collision resistance hash function which compresses a 2n bit string n bit '''
+''' code to create a variable length collision resistance hash function which using Merkle Damgard function on the fixed length collision resistance hash function '''
 ''' author : Tathagato Roy '''
-
 
 #import the neccessary libraries
 import sys
@@ -79,8 +78,9 @@ def find_generator(p):
             print("the generator is given by : {0}".format(i))
             return i 
 
+
 ''' class to create fixed length collision resistance hash '''
-class CRHF:
+class Fixed_Hash:
     ''' generate the nbit prime,its generator and random h belonging Z*p '''
     def __init__(self,n):
         self.n = n 
@@ -103,11 +103,45 @@ class CRHF:
         return bin(res).replace('0b','').zfill(self.n)
 
 
-n = int(input("Enter the value of n ,preferably less than 16  : "))
+''' class to create variable length collision resistance hash '''
+class Variable_Hash:
+    
+    ''' intialise a fixed length hash  of parameter n '''
+    def __init__(self,n):
+        self.fixed_hash = Fixed_Hash(n)
+    
+    ''' hash function '''
+    def hash(self,m):
+        #compute the number of blocks
+        b = math.ceil(len(m)/self.fixed_hash.n)
+        #pad the message so it is exact multiple of b
+        while(len(m) % self.fixed_hash.n != 0):
+            m = m + '0'
+
+        #initialise z_0 as 0^n    
+        curr_z = ''
+        for i in range(self.fixed_hash.n):
+            curr_z += '0'
+        
+        for i in range(1,b+1):
+            cur_x = m[(i - 1)*self.fixed_hash.n:i*self.fixed_hash.n]
+            curr_z = self.fixed_hash.hash(curr_z + cur_x)
+        L = bin(len(m)).replace('0b','').zfill(self.fixed_hash.n)
+        return self.fixed_hash.hash(curr_z + L)
+
+        
+        
+
+
+    
+
+
+
+n = int(input("Enter the value of n ,preferably less than 16 for the fixed hash : "))
 if n >= 16:
     print("the value of n is too large,exiting due to less computational resources")
     sys.exit(1)
-crhf = CRHF(n)
+hash_func = Variable_Hash(n)
 
 while(1):
     ans = input("if you want to try out a query press y else n : "  )
@@ -115,18 +149,11 @@ while(1):
         print("Exiting ....")
         sys.exit(0)
     elif ans == 'y':
-        message = input("Enter the {0} bit message  : ".format(2*n))
+        message = input("Enter the variable bit message of length at most {0}  : ".format(2**n - 1))
 
-        print("the hash value of {0} is {1}".format(message,crhf.hash(message)))
+        print("the hash value of {0} is {1}".format(message,hash_func.hash(message)))
     else:
         print("wrong key pressed,exiting")
         sys.exit(1)
 
 
-
-
-
-     
-
-        
-        
