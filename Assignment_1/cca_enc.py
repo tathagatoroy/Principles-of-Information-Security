@@ -6,6 +6,8 @@
 import sys
 import numpy as np
 import time
+import math
+
 
 GENERATOR = 73
 PRIME  = 39041

@@ -123,7 +123,7 @@ while(1):
         print("Exiting ....")
         sys.exit(0)
     elif ans == 'y':
-        x = input("Enter the n bit binary message : ")
+        x = input("Enter the {0} bit binary message : ".format(n))
         if len(x) != n:
             print("Size of message is wrong,exiting")
             sys.exit(1)

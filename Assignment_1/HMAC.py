@@ -198,27 +198,28 @@ def string_xor(a,b):
             s = s + '0'
         else:
             s = s + '1'
+    return s
         
 ''' class to construct a hmac '''
 class HMAC:
-    def __init__(self,iv=0, ipad=0x5c, opad=0x36,n):
+    def __init__(self,n,iv=0, ipad=0x5c, opad=0x36):
         self.n = n
         self.iv = bin(iv).replace('0b','').zfill(n)
-        self.ipad = bin(ipad).replace('0b'.zfill(n)
-        self.opad = bin(ipad).replace('0b','').zfill(n)
+        self.ipad = bin(ipad).replace('0b','').zfill(n)
+        self.opad = bin(opad).replace('0b','').zfill(n)
         ''' generate key '''
         seed = generate_seed(min(self.n - 1,16))
         self.k = Pseudo_Random_Generator(seed,self.n)
         self.Vhash = Variable_Hash(n)
 
-        )
+        
     
     def Mac(self,x):
         v1 = string_xor(self.k,self.opad)
         v2 = string_xor(self.k,self.ipad)
-        v3 = iv + v2 + x
+        v3 = self.iv + v2 + x
         v4 = self.Vhash.hash(v3)
-        v5 = iv + v1 + v4
+        v5 = self.iv + v1 + v4
         res = self.Vhash.hash(v5)
         return res
     
@@ -227,7 +228,42 @@ class HMAC:
             return 1
         else:
             return 0
-    
+
+n = int(input("Enter the size of the output hash (should be more than 16 and less than 30) :     " ))
+if n < 16 or n >= 30:
+    print("n should be more than 16 and less than 30")
+    sys.exit(1)
+hmac = HMAC(n)
+while(1):
+    ans = input("if you want to try out a query press y else n : "  )
+    if ans == 'n':
+        print("Exiting ....")
+        sys.exit(0)
+    elif ans == 'y':
+        x = input("Enter the variable length message : ")
+        #check if the size of the message is at max 2^(n/4 -1) 
+        #if float(len(x)) > pow(2,(n/4) - 1):
+            #print("Size of message is too long,exiting")
+            #sys.exit(1)
+
+
+        #HMAC generation
+        res = hmac.Mac(x)
+        print("The hmac tag is given by ({0})".format(res))
+
+        #verification 
+        print("Verfiying the generated HMAC")
+        if hmac.Verify(x,res) == 1:
+            print("Succesfully Verified")
+        else:
+            print("Corruption happened")
+        
+
+    else:
+        print("Wrong key pressed ....")
+        sys.exit(1)
+
+
 
 
 
