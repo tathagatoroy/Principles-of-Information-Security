@@ -3,7 +3,6 @@
 
 
 #import the neccessary libraries
-#prg is a random number generator
 import sys
 import numpy as np
 import time
